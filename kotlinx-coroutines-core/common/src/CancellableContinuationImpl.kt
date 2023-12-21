@@ -38,6 +38,12 @@ internal open class CancellableContinuationImpl<in T>(
         assert { resumeMode != MODE_UNINITIALIZED } // invalid mode for CancellableContinuationImpl
     }
 
+    init {
+        require(delegate is DispatchedContinuation<T>) {
+            "Expected a DispatchedContinuation as delegate but got: $delegate"
+        }
+    }
+
     public override val context: CoroutineContext = delegate.context
 
     /*

@@ -41,6 +41,10 @@ fun MavenPom.configureMavenCentralMetadata(project: Project) {
 }
 
 fun mavenRepositoryUri(): URI {
+    val repositoryUrl = System.getenv("libs.repository.url")
+    if (repositoryUrl != null) {
+        return URI(repositoryUrl)
+    }
     val repositoryId: String? = System.getenv("libs.repository.id")
     return if (repositoryId == null) {
         URI("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
@@ -77,5 +81,5 @@ fun signPublicationIfKeyPresent(project: Project, publication: MavenPublication)
 }
 
 private fun Project.getSensitiveProperty(name: String): String? {
-    return project.findProperty(name) as? String ?: System.getenv(name)
+    return (project.findProperty(name) as? String ?: System.getenv(name))
 }

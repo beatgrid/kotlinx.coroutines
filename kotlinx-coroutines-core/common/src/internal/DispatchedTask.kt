@@ -52,7 +52,18 @@ internal abstract class DispatchedTask<in T> internal constructor(
     // Used by the IDEA debugger via reflection and must be kept binary-compatible, see KTIJ-24102
     @JvmField public var resumeMode: Int
 ) : SchedulerTask() {
+
     internal abstract val delegate: Continuation<T>
+
+    private val initStacktrace: String
+
+    init {
+        try {
+            throw Exception()
+        } catch (e: Exception) {
+            initStacktrace = e.stackTraceToString()
+        }
+    }
 
     internal abstract fun takeState(): Any?
 
@@ -84,7 +95,11 @@ internal abstract class DispatchedTask<in T> internal constructor(
         assert { resumeMode != MODE_UNINITIALIZED } // should have been set before dispatching
         val taskContext = this.taskContext
         var fatalException: Throwable? = null
+
         try {
+            if (delegate !is DispatchedContinuation<T>) {
+                error("Delegate $delegate is not a DispatchedContinuation. Assertion failed for $this with init stacktrace: ${this.initStacktrace}")
+            }
             val delegate = delegate as DispatchedContinuation<T>
             val continuation = delegate.continuation
             withContinuationContext(continuation, delegate.countOrElement) {
