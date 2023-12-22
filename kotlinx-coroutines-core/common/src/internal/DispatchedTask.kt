@@ -55,16 +55,6 @@ internal abstract class DispatchedTask<in T> internal constructor(
 
     internal abstract val delegate: Continuation<T>
 
-    private val initStacktrace: String
-
-    init {
-        try {
-            throw Exception()
-        } catch (e: Exception) {
-            initStacktrace = e.stackTraceToString()
-        }
-    }
-
     internal abstract fun takeState(): Any?
 
     /**
@@ -98,7 +88,7 @@ internal abstract class DispatchedTask<in T> internal constructor(
 
         try {
             if (delegate !is DispatchedContinuation<T>) {
-                error("Delegate $delegate is not a DispatchedContinuation. Assertion failed for $this with init stacktrace: ${this.initStacktrace}")
+                error("Delegate $delegate is not a DispatchedContinuation. Assertion failed for $this")
             }
             val delegate = delegate as DispatchedContinuation<T>
             val continuation = delegate.continuation

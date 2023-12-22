@@ -41,7 +41,7 @@ fun MavenPom.configureMavenCentralMetadata(project: Project) {
 }
 
 fun mavenRepositoryUri(): URI {
-    val repositoryUrl = System.getenv("libs.repository.url")
+    val repositoryUrl = System.getProperty("libs.repository.url")
     if (repositoryUrl != null) {
         return URI(repositoryUrl)
     }
