@@ -188,7 +188,7 @@ internal class DispatchedContinuation<in T>(
         return state
     }
 
-    override val delegate: Continuation<T>
+    override val delegate: DispatchedContinuation<T>
         get() = this
 
     override fun resumeWith(result: Result<T>) {

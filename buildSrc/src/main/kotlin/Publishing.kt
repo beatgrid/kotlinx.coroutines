@@ -54,8 +54,8 @@ fun MavenPom.configureMavenCentralMetadata(project: Project) {
  */
 private val spacePublicationEnabled = System.getenv("libs.space.pub")?.equals("true") ?: false
 
-fun mavenRepositoryUri(): URI {
-    val repositoryUrl = System.getProperty("libs.repository.url")
+private fun mavenRepositoryUri(project: Project): URI {
+    val repositoryUrl = project.getSensitiveProperty("libs.repository.url")
     if (repositoryUrl != null) {
         return URI(repositoryUrl)
     }
@@ -72,7 +72,7 @@ fun mavenRepositoryUri(): URI {
 
 fun configureMavenPublication(rh: RepositoryHandler, project: Project) {
     rh.maven {
-        url = mavenRepositoryUri()
+        url = mavenRepositoryUri(project)
         credentials {
             if (spacePublicationEnabled) {
                 // Configure space credentials

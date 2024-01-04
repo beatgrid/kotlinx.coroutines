@@ -53,7 +53,7 @@ internal abstract class DispatchedTask<in T> internal constructor(
     @JvmField public var resumeMode: Int
 ) : SchedulerTask() {
 
-    internal abstract val delegate: Continuation<T>
+    internal abstract val delegate: DispatchedContinuation<T>
 
     internal abstract fun takeState(): Any?
 
@@ -87,10 +87,7 @@ internal abstract class DispatchedTask<in T> internal constructor(
         var fatalException: Throwable? = null
 
         try {
-            if (delegate !is DispatchedContinuation<T>) {
-                error("Delegate $delegate is not a DispatchedContinuation. Assertion failed for $this")
-            }
-            val delegate = delegate as DispatchedContinuation<T>
+            val delegate = this.delegate
             val continuation = delegate.continuation
             withContinuationContext(continuation, delegate.countOrElement) {
                 val context = continuation.context
@@ -158,7 +155,7 @@ internal fun <T> DispatchedTask<T>.dispatch(mode: Int) {
     assert { mode != MODE_UNINITIALIZED } // invalid mode value for this method
     val delegate = this.delegate
     val undispatched = mode == MODE_UNDISPATCHED
-    if (!undispatched && delegate is DispatchedContinuation<*> && mode.isCancellableMode == resumeMode.isCancellableMode) {
+    if (!undispatched && mode.isCancellableMode == resumeMode.isCancellableMode) {
         // dispatch directly using this instance's Runnable implementation
         val dispatcher = delegate.dispatcher
         val context = delegate.context

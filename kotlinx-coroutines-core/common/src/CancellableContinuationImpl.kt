@@ -31,17 +31,14 @@ internal val RESUME_TOKEN = Symbol("RESUME_TOKEN")
  */
 @PublishedApi
 internal open class CancellableContinuationImpl<in T>(
-    final override val delegate: Continuation<T>,
+    delegate: Continuation<T>,
     resumeMode: Int
 ) : DispatchedTask<T>(resumeMode), CancellableContinuation<T>, CoroutineStackFrame, Waiter {
-    init {
-        assert { resumeMode != MODE_UNINITIALIZED } // invalid mode for CancellableContinuationImpl
-    }
+
+    override val delegate: DispatchedContinuation<T> = (delegate as? DispatchedContinuation<T>) ?: error("Delegate should be a DispatchedContinuation but was: $delegate")
 
     init {
-        require(delegate is DispatchedContinuation<T>) {
-            "Expected a DispatchedContinuation as delegate but got: $delegate"
-        }
+        assert { resumeMode != MODE_UNINITIALIZED } // invalid mode for CancellableContinuationImpl
     }
 
     public override val context: CoroutineContext = delegate.context
@@ -144,7 +141,7 @@ internal open class CancellableContinuationImpl<in T>(
         }
     }
 
-    private fun isReusable(): Boolean = resumeMode.isReusableMode && (delegate as DispatchedContinuation<*>).isReusable()
+    private fun isReusable(): Boolean = resumeMode.isReusableMode && delegate.isReusable()
 
     /**
      * Resets cancellability state in order to [suspendCancellableCoroutineReusable] to work.
@@ -167,7 +164,7 @@ internal open class CancellableContinuationImpl<in T>(
     }
 
     public override val callerFrame: CoroutineStackFrame?
-        get() = delegate as? CoroutineStackFrame
+        get() = delegate
 
     public override fun getStackTraceElement(): StackTraceElement? = null
 
@@ -203,8 +200,7 @@ internal open class CancellableContinuationImpl<in T>(
     private fun cancelLater(cause: Throwable): Boolean {
         // Ensure that we are postponing cancellation to the right reusable instance
         if (!isReusable()) return false
-        val dispatched = delegate as DispatchedContinuation<*>
-        return dispatched.postponeCancellation(cause)
+        return delegate.postponeCancellation(cause)
     }
 
     public override fun cancel(cause: Throwable?): Boolean {
@@ -365,7 +361,7 @@ internal open class CancellableContinuationImpl<in T>(
      */
     internal fun releaseClaimedReusableContinuation() {
         // Cannot be cast if e.g. invoked from `installParentHandleReusable` for context without dispatchers, but with Job in it
-        val cancellationCause = (delegate as? DispatchedContinuation<*>)?.tryReleaseClaimedContinuation(this) ?: return
+        val cancellationCause = delegate.tryReleaseClaimedContinuation(this) ?: return
         detachChild()
         cancel(cancellationCause)
     }
