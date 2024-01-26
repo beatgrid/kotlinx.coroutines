@@ -163,8 +163,8 @@ public abstract class CoroutineDispatcher :
          * Unconditional cast is safe here: we only return DispatchedContinuation from `interceptContinuation`,
          * any ClassCastException can only indicate compiler bug
          */
-        val dispatched = continuation as DispatchedContinuation<*>
-        dispatched.release()
+        val dispatched = continuation as? DispatchedContinuation<*>
+        dispatched?.release()
     }
 
     /**

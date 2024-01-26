@@ -171,13 +171,13 @@ internal fun <T> DispatchedTask<T>.dispatch(mode: Int) {
     }
 }
 
-internal fun <T> DispatchedTask<T>.resume(delegate: Continuation<T>, undispatched: Boolean) {
+internal fun <T> DispatchedTask<T>.resume(delegate: DispatchedContinuation<T>, undispatched: Boolean) {
     // This resume is never cancellable. The result is always delivered to delegate continuation.
     val state = takeState()
     val exception = getExceptionalResult(state)
     val result = if (exception != null) Result.failure(exception) else Result.success(getSuccessfulResult<T>(state))
     when {
-        undispatched -> (delegate as DispatchedContinuation).resumeUndispatchedWith(result)
+        undispatched -> delegate.resumeUndispatchedWith(result)
         else -> delegate.resumeWith(result)
     }
 }
