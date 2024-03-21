@@ -1,7 +1,3 @@
-/*
- * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
-
 @file:JvmMultifileClass
 @file:JvmName("ThreadPoolDispatcherKt")
 package kotlinx.coroutines
@@ -15,9 +11,9 @@ import kotlin.jvm.*
  *
  * If the resulting dispatcher is [closed][CloseableCoroutineDispatcher.close] and
  * attempt to submit a task is made, then:
- * * On the JVM, the [Job] of the affected task is [cancelled][Job.cancel] and the task is submitted to the
+ * - On the JVM, the [Job] of the affected task is [cancelled][Job.cancel] and the task is submitted to the
  *   [Dispatchers.IO], so that the affected coroutine can clean up its resources and promptly complete.
- * * On Native, the attempt to submit a task throws an exception.
+ * - On Native, the attempt to submit a task throws an exception.
  *
  * This is a **delicate** API. The result of this method is a closeable resource with the
  * associated native resources (threads or native workers). It should not be allocated in place,
@@ -44,9 +40,9 @@ public fun newSingleThreadContext(name: String): CloseableCoroutineDispatcher =
  *
  * If the resulting dispatcher is [closed][CloseableCoroutineDispatcher.close] and
  * attempt to submit a continuation task is made,
- * * On the JVM, the [Job] of the affected task is [cancelled][Job.cancel] and the task is submitted to the
+ * - On the JVM, the [Job] of the affected task is [cancelled][Job.cancel] and the task is submitted to the
  *   [Dispatchers.IO], so that the affected coroutine can clean up its resources and promptly complete.
- * * On Native, the attempt to submit a task throws an exception.
+ * - On Native, the attempt to submit a task throws an exception.
  *
  * This is a **delicate** API. The result of this method is a closeable resource with the
  * associated native resources (threads or native workers). It should not be allocated in place,

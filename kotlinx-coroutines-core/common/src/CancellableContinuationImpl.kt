@@ -1,7 +1,3 @@
-/*
- * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
-
 package kotlinx.coroutines
 
 import kotlinx.atomicfu.*
@@ -91,11 +87,11 @@ internal open class CancellableContinuationImpl<in T>(
      * - installParentHandle publishes this instance on T1
      *
      * T1 writes:
-     * * handle = installed; right after the installation
-     * * Shortly after: if (isComplete) handle = NonDisposableHandle
+     * - handle = installed; right after the installation
+     * - Shortly after: if (isComplete) handle = NonDisposableHandle
      *
      * Any other T writes if the parent job is cancelled in detachChild:
-     * * handle = NonDisposableHandle
+     * - handle = NonDisposableHandle
      *
      * We want to preserve a strict invariant on parentHandle transition, allowing only three of them:
      * null -> anyHandle

@@ -1,6 +1,3 @@
-/*
- * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
 @file:Suppress("DEPRECATION_ERROR")
 
 package kotlinx.coroutines
@@ -253,9 +250,9 @@ public open class JobSupport constructor(active: Boolean) : Job, ChildJob, Paren
         /*
          * 1) If we have non-CE, use it as root cause
          * 2) If our original cause was TCE, use *non-original* TCE because of the special nature of TCE
-         *    * It is a CE, so it's not reported by children
-         *    * The first instance (cancellation cause) is created by timeout coroutine and has no meaningful stacktrace
-         *    * The potential second instance is thrown by withTimeout lexical block itself, then it has recovered stacktrace
+         *    - It is a CE, so it's not reported by children
+         *    - The first instance (cancellation cause) is created by timeout coroutine and has no meaningful stacktrace
+         *    - The potential second instance is thrown by withTimeout lexical block itself, then it has recovered stacktrace
          * 3) Just return the very first CE
          */
         val firstNonCancellation = exceptions.firstOrNull { it !is CancellationException }
@@ -281,7 +278,7 @@ public open class JobSupport constructor(active: Boolean) : Job, ChildJob, Paren
             val unwrapped = unwrap(exception)
             if (unwrapped !== rootCause && unwrapped !== unwrappedCause &&
                 unwrapped !is CancellationException && seenExceptions.add(unwrapped)) {
-                rootCause.addSuppressedThrowable(unwrapped)
+                rootCause.addSuppressed(unwrapped)
             }
         }
     }
@@ -369,7 +366,7 @@ public open class JobSupport constructor(active: Boolean) : Job, ChildJob, Paren
             try {
                 node.invoke(cause)
             } catch (ex: Throwable) {
-                exception?.apply { addSuppressedThrowable(ex) } ?: run {
+                exception?.apply { addSuppressed(ex) } ?: run {
                     exception =  CompletionHandlerException("Exception in completion handler $node for $this", ex)
                 }
             }
@@ -824,8 +821,8 @@ public open class JobSupport constructor(active: Boolean) : Job, ChildJob, Paren
      * Completes this job. Used by [AbstractCoroutine.resume].
      * It throws [IllegalStateException] on repeated invocation (when this job is already completing).
      * Returns:
-     * * [COMPLETING_WAITING_CHILDREN] if started waiting for children.
-     * * Final state otherwise (caller should do [afterCompletion])
+     * - [COMPLETING_WAITING_CHILDREN] if started waiting for children.
+     * - Final state otherwise (caller should do [afterCompletion])
      */
     internal fun makeCompletingOnce(proposedUpdate: Any?): Any? {
         loopOnState { state ->
@@ -989,10 +986,10 @@ public open class JobSupport constructor(active: Boolean) : Job, ChildJob, Paren
      * similarly to [invokeOnCompletion] with `onCancelling` set to `true`.
      *
      * The meaning of [cause] parameter:
-     * * Cause is `null` when the job has completed normally.
-     * * Cause is an instance of [CancellationException] when the job was cancelled _normally_.
+     * - Cause is `null` when the job has completed normally.
+     * - Cause is an instance of [CancellationException] when the job was cancelled _normally_.
      *   **It should not be treated as an error**. In particular, it should not be reported to error logs.
-     * * Otherwise, the job had been cancelled or failed with exception.
+     * - Otherwise, the job had been cancelled or failed with exception.
      *
      * The specified [cause] is not the final cancellation cause of this job.
      * A job may produce other exceptions while it is failing and the final cause might be different.

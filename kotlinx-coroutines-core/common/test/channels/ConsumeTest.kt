@@ -1,10 +1,7 @@
-/*
- * Copyright 2016-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
-
 @file:OptIn(DelicateCoroutinesApi::class)
 package kotlinx.coroutines.channels
 
+import kotlinx.coroutines.testing.*
 import kotlinx.coroutines.*
 import kotlin.test.*
 
@@ -95,7 +92,6 @@ class ConsumeTest: TestBase() {
     }
 
     /** Check that [BroadcastChannel.consume] does not suffer from KT-58685 */
-    @OptIn(ObsoleteCoroutinesApi::class)
     @Suppress("DEPRECATION", "DEPRECATION_ERROR")
     @Test
     fun testBroadcastChannelConsumeJsMiscompilation() = runTest {

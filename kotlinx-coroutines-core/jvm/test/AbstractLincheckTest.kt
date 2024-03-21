@@ -1,12 +1,9 @@
-/*
- * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
 package kotlinx.coroutines
 
+import kotlinx.coroutines.testing.*
 import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.*
 import org.jetbrains.kotlinx.lincheck.strategy.stress.*
-import org.jetbrains.kotlinx.lincheck.verifier.*
 import org.junit.*
 
 abstract class AbstractLincheckTest {

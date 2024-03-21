@@ -1,6 +1,3 @@
-/*
- * Copyright 2016-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
 @file:JvmMultifileClass
 @file:JvmName("ChannelsKt")
 @file:Suppress("unused")
@@ -56,7 +53,7 @@ internal fun consumesAll(vararg channels: ReceiveChannel<*>): CompletionHandler 
                 if (exception == null) {
                     exception = e
                 } else {
-                    exception.addSuppressedThrowable(e)
+                    exception.addSuppressed(e)
                 }
             }
         exception?.let { throw it }

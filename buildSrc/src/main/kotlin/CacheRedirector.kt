@@ -1,7 +1,3 @@
-/*
- * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
-
 import org.gradle.api.*
 import org.gradle.api.artifacts.dsl.*
 import org.gradle.api.artifacts.repositories.*
@@ -107,13 +103,13 @@ private fun Project.checkRedirect(repositories: RepositoryHandler, containerName
 private fun Project.configureYarnAndNodeRedirects() {
     if (CacheRedirector.isEnabled) {
         val yarnRootExtension = extensions.findByType<YarnRootExtension>()
-        if (yarnRootExtension != null) {
-            yarnRootExtension.downloadBaseUrl = CacheRedirector.maybeRedirect(yarnRootExtension.downloadBaseUrl)
+        yarnRootExtension?.downloadBaseUrl?.let {
+            yarnRootExtension.downloadBaseUrl = CacheRedirector.maybeRedirect(it)
         }
 
         val nodeJsExtension = rootProject.extensions.findByType<NodeJsRootExtension>()
-        if (nodeJsExtension != null) {
-            nodeJsExtension.nodeDownloadBaseUrl = CacheRedirector.maybeRedirect(nodeJsExtension.nodeDownloadBaseUrl)
+        nodeJsExtension?.nodeDownloadBaseUrl?.let {
+            nodeJsExtension.nodeDownloadBaseUrl = CacheRedirector.maybeRedirect(it)
         }
     }
 }

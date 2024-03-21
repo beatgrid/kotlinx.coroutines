@@ -1,8 +1,7 @@
-/*
- * Copyright 2016-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
- */
+package kotlinx.coroutines.testing
 
-package kotlinx.coroutines
+import kotlinx.coroutines.*
+import java.lang.Runnable
 
 private const val WAIT_LOST_THREADS = 10_000L // 10s
 private val ignoreLostThreads = mutableSetOf<String>()
@@ -35,6 +34,15 @@ fun List<Thread>.dumpThreads(header: String) {
         println()
     }
     println("===")
+}
+
+class PoolThread(
+    @JvmField val dispatcher: ExecutorCoroutineDispatcher, // for debugging & tests
+    target: Runnable, name: String
+) : Thread(target, name) {
+    init {
+        isDaemon = true
+    }
 }
 
 fun ExecutorCoroutineDispatcher.dumpThreads(header: String) =
